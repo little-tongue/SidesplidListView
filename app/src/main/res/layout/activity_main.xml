@@ -4,15 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <jijiehao.minhua.com.sidesliplistviewdemo.RelativeSwipeRefreshLayout
+    <jijiehao.minhua.com.sidesliplistview.RelativeSwipeRefreshLayout
         android:id="@+id/refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <jijiehao.minhua.com.sidesliplistviewdemo.SideslipListView
+        <jijiehao.minhua.com.sidesliplistview.SideslipListView
             android:id="@+id/slvContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </jijiehao.minhua.com.sidesliplistviewdemo.RelativeSwipeRefreshLayout>
+    </jijiehao.minhua.com.sidesliplistview.RelativeSwipeRefreshLayout>
 
 </LinearLayout>

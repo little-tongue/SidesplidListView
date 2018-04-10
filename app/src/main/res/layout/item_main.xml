@@ -8,6 +8,9 @@
     <TextView
         android:id="@+id/tvItemName"
         android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:textColor="#333333"
+        android:paddingLeft="10dp"
         android:layout_height="match_parent" />
 
     <LinearLayout
