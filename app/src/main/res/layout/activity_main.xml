@@ -12,7 +12,9 @@
         <jijiehao.minhua.com.sidesliplistview.SideslipListView
             android:id="@+id/slvContent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:divider="#dbdbdb"
+            android:dividerHeight="1dp" />
     </jijiehao.minhua.com.sidesliplistview.RelativeSwipeRefreshLayout>
 
 </LinearLayout>

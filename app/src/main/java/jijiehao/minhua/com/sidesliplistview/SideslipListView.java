@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -47,7 +48,10 @@ public class SideslipListView extends ListView {
      */
     private LinearLayout.LayoutParams mLayoutParams;
 
+
     private Scroller mScroller;
+
+    private int mTouchSlop;
 
     public SideslipListView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -61,6 +65,7 @@ public class SideslipListView extends ListView {
         wm.getDefaultDisplay().getMetrics(dm);
         mScreenWidth = dm.widthPixels;
         mScroller = new Scroller(context);
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     /**
@@ -71,6 +76,11 @@ public class SideslipListView extends ListView {
      * 是否正在左划
      */
     private boolean isLeftScrolling;
+    /**
+     * 是否正在垂直滑动
+     */
+    private boolean startScrolling;
+    private boolean isVerticalScrolling;
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
@@ -96,6 +106,9 @@ public class SideslipListView extends ListView {
      * 处理action_down事件
      */
     private void performActionDown(MotionEvent ev) {
+        isLeftScrolling = false;
+        isVerticalScrolling = false;
+        startScrolling = false;
         if (shouldTurnToNormal()) {
             turnToNormal();
             shouldOnlyTouchDown = true;
@@ -148,17 +161,26 @@ public class SideslipListView extends ListView {
         }
         int nowX = (int) ev.getX();
         int nowY = (int) ev.getY();
-        if (Math.abs(nowX - mDownX) > Math.abs(nowY - mDownY)) {
-            // 如果向左滑动
-            if (nowX < mDownX) {
-                isLeftScrolling = true;
-                // 计算要偏移的距离
-                int scroll = (nowX - mDownX);
-                // 如果大于了删除按钮的宽度， 则最大为删除按钮的宽度
-                if (-scroll >= mDeleteBtnWidth) {
-                    scroll = -mDeleteBtnWidth;
+
+        int offsetX = Math.abs(nowX - mDownX);
+        int offsetY = Math.abs(nowY - mDownY);
+        if (!startScrolling) {
+            startScrolling = offsetX > mTouchSlop || offsetY > mTouchSlop;
+        } else {
+            if (!isVerticalScrolling && offsetX > offsetY) {
+                // 如果向左滑动
+                if (nowX < mDownX) {
+                    isLeftScrolling = true;
+                    // 计算要偏移的距离
+                    int scroll = (nowX - mDownX);
+                    // 如果大于了删除按钮的宽度， 则最大为删除按钮的宽度
+                    if (-scroll >= mDeleteBtnWidth) {
+                        scroll = -mDeleteBtnWidth;
+                    }
+                    mPointChild.scrollTo(-scroll, 0);
                 }
-                mPointChild.scrollTo(-scroll, 0);
+            } else {
+                isVerticalScrolling = true;
             }
         }
         return isLeftScrolling || super.onTouchEvent(ev);
@@ -169,6 +191,8 @@ public class SideslipListView extends ListView {
      */
     private boolean performActionUp(MotionEvent ev) {
         isLeftScrolling = false;
+        isVerticalScrolling = false;
+        startScrolling = false;
 
         if (shouldOnlyTouchDown) {
             shouldOnlyTouchDown = false;
@@ -199,7 +223,7 @@ public class SideslipListView extends ListView {
         } else {
             turnToNormal();
         }
-        return true;
+        return super.onTouchEvent(ev);
     }
 
     /**
