@@ -14,22 +14,25 @@ import android.view.ViewConfiguration;
  */
 
 public class RelativeSwipeRefreshLayout extends SwipeRefreshLayout {
-    /**
-     * 是否让子view处理touch事件
-     */
-    private boolean letChildDealTouchEvent;
+
 
     public RelativeSwipeRefreshLayout(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public RelativeSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
     }
 
 
+    /**
+     * 是否让子view处理touch事件
+     */
+    private boolean letChildDealTouchEvent;
     private float startX;
     private float startY;
+    private int mTouchSlop;
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -54,7 +57,7 @@ public class RelativeSwipeRefreshLayout extends SwipeRefreshLayout {
                 float distanceX = Math.abs(endX - startX);
                 float distanceY = Math.abs(endY - startY);
                 // 如果X轴位移大于Y轴位移，那么将事件交给子View处理
-                if (distanceX > ViewConfiguration.get(getContext()).getScaledTouchSlop() && distanceX > distanceY) {
+                if (distanceX > mTouchSlop && distanceX > distanceY) {
                     letChildDealTouchEvent = true;
                     return false;
                 }
